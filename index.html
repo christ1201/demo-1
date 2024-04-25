@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fare Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <form id="fareForm">
+        <label for="weekday">Weekday:</label>
+        <select id="weekday">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+        </select>
+        <label for="hour">Hour:</label>
+        <input type="number" id="hour" min="0" max="23">
+        <label for="minute">Minute:</label>
+        <input type="number" id="minute" min="0" max="59">
+        <label for="distance">Distance (in meters):</label>
+        <input type="number" id="distance">
+        <label for="pickupArea">Pickup Community Area:</label>
+        <input type="number" id="pickupArea">
+        <label for="dropoffArea">Dropoff Community Area:</label>
+        <input type="number" id="dropoffArea">
+        <button type="button" onclick="predictFare()">Predict Fare</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function predictFare() {
+            var weekday = document.getElementById("weekday").value;
+            var hour = document.getElementById("hour").value;
+            var minute = document.getElementById("minute").value;
+            var distance = document.getElementById("distance").value;
+            var pickupArea = document.getElementById("pickupArea").value;
+            var dropoffArea = document.getElementById("dropoffArea").value;
+
+            var data = {
+                "weekday": weekday,
+                "hour": parseInt(hour),
+                "minute": parseInt(minute),
+                "distance": parseFloat(distance),
+                "pickup_area": parseInt(pickupArea),
+                "dropoff_area": parseInt(dropoffArea)
+            };
+            
+
+            // fetch('/predict_fare', {
+            fetch('https://demo1-fbhrrojzua-et.a.run.app/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerText = "Predicted Fare: $" + data.predicted_fare.toFixed(2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
